@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/vendor/
+
+# Build output and framework cache
+frontend/dist/
+frontend/.angular/
+backend/public/build/
+backend/bootstrap/cache/*.php
+!backend/bootstrap/cache/.gitignore
+
+# Environment and secrets
+.env
+.env.*
+backend/.env
+frontend/.env
+!backend/.env.example
+!frontend/.env.example
+
+# Databases and local uploaded/runtime files
+backend/database/*.sqlite
+backend/database/*.sqlite-*
+backend/public/storage
+backend/storage/app/public/*
+!backend/storage/app/public/.gitignore
+backend/storage/framework/cache/data/*
+!backend/storage/framework/cache/data/.gitignore
+backend/storage/framework/sessions/*
+!backend/storage/framework/sessions/.gitignore
+backend/storage/framework/testing/*
+!backend/storage/framework/testing/.gitignore
+backend/storage/framework/views/*
+!backend/storage/framework/views/.gitignore
+backend/storage/logs/*
+!backend/storage/logs/.gitignore
+
+# Logs
+*.log
+.ng-serve*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.git-backup/
+frontend/.git-backup/
+*.swp
+*.swo
