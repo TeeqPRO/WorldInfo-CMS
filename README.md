@@ -277,3 +277,21 @@ php artisan route:list --path=api
 php artisan test
 ```
 
+## Testy
+
+Backend ma testy PHPUnit dla najwazniejszych regulek CMS:
+
+- blokada nadawania i odbierania roli glownego admina,
+- nadawanie roli dziennikarza tylko przez admina,
+- tworzenie artykulow tylko przez dziennikarzy i adminow,
+- usuwanie artykulow: dziennikarz tylko swoje, admin wszystkie,
+- ukrywanie szkicow w publicznym API,
+- filtrowanie artykulow po wyszukiwaniu i tagu,
+- ulubione artykuly osobno dla kazdego uzytkownika.
+
+Uruchomienie:
+
+```bash
+cd backend
+php artisan test
+```
