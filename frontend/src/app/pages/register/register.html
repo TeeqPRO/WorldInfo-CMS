@@ -1,0 +1,74 @@
+<div class="account-shell">
+  <header class="account-topbar">
+    <a class="account-brand" routerLink="/">
+      <span class="brand-dot"></span>
+      WorldInfo
+      <span class="brand-tag">PL</span>
+    </a>
+    <nav class="account-nav" aria-label="Konto">
+      <a routerLink="/login">Logowanie</a>
+    </nav>
+  </header>
+
+  <main class="account-layout">
+    <section class="account-copy">
+      <span class="eyebrow">Nowe konto</span>
+      <h1>Rejestracja</h1>
+      <p>Utworz konto czytelnika i przejdz do ustawien profilu.</p>
+    </section>
+
+    <form class="auth-panel" (ngSubmit)="register()">
+      <div class="auth-panel-heading">
+        <span class="section-kicker">Start</span>
+        <h2>Utworz konto</h2>
+      </div>
+
+      <label class="form-group">
+        Nazwa
+        <input
+          type="text"
+          name="name"
+          [(ngModel)]="name"
+          autocomplete="name"
+          placeholder="Twoja nazwa"
+          required
+        />
+      </label>
+
+      <label class="form-group">
+        Email
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          autocomplete="email"
+          placeholder="email@example.com"
+          required
+        />
+      </label>
+
+      <label class="form-group">
+        Haslo
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          autocomplete="new-password"
+          placeholder="minimum 8 znakow"
+          required
+        />
+      </label>
+
+      <div class="form-error" *ngIf="error()">{{ error() }}</div>
+
+      <button class="cta auth-submit" type="submit" [disabled]="isBusy() || !name || !email || !password">
+        {{ isBusy() ? 'Tworzenie...' : 'Utworz konto' }}
+      </button>
+
+      <p class="form-switch">
+        Masz konto?
+        <a routerLink="/login">Zaloguj sie</a>
+      </p>
+    </form>
+  </main>
+</div>

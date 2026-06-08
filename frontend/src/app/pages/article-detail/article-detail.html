@@ -1,0 +1,50 @@
+<div class="account-shell">
+  <header class="account-topbar">
+    <a class="account-brand" routerLink="/">
+      <span class="brand-dot"></span>
+      WorldInfo
+      <span class="brand-tag">PL</span>
+    </a>
+    <nav class="account-nav" aria-label="Konto">
+      <a routerLink="/favorites">Ulubione</a>
+      <a routerLink="/profile">Profil</a>
+    </nav>
+  </header>
+
+  <main class="account-wide" *ngIf="article() as item">
+    <article class="reader-panel">
+      <img
+        class="reader-image"
+        *ngIf="item.image_url"
+        [src]="item.image_url"
+        [alt]="item.title"
+      />
+      <div class="reader-body">
+        <span class="eyebrow">{{ item.section }}</span>
+        <h1>{{ item.title }}</h1>
+        <p class="reader-lead" *ngIf="item.excerpt">{{ item.excerpt }}</p>
+
+        <div class="reader-meta">
+          <span>{{ item.author.name }}</span>
+          <span>{{ item.updated_at | date:'dd.MM.yyyy HH:mm' }}</span>
+        </div>
+
+        <div class="tag-cloud" *ngIf="item.tags.length">
+          <span *ngFor="let tag of item.tags">#{{ tag }}</span>
+        </div>
+
+        <button class="small-action" type="button" (click)="toggleFavorite()">
+          {{ item.is_favorited ? 'Usun z ulubionych' : 'Dodaj do ulubionych' }}
+        </button>
+
+        <div class="formatted-content" [innerHTML]="renderedBody"></div>
+      </div>
+    </article>
+  </main>
+
+  <main class="account-wide" *ngIf="error()">
+    <section class="admin-panel">
+      <div class="form-error">{{ error() }}</div>
+    </section>
+  </main>
+</div>

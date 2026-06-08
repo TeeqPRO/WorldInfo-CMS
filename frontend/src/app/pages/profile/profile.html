@@ -1,0 +1,67 @@
+<div class="account-shell">
+  <header class="account-topbar">
+    <a class="account-brand" routerLink="/">
+      <span class="brand-dot"></span>
+      WorldInfo
+      <span class="brand-tag">PL</span>
+    </a>
+    <nav class="account-nav" aria-label="Konto">
+      <a *ngIf="isAdmin" routerLink="/admin">Admin panel</a>
+      <button class="link-button" type="button" (click)="logout()" [disabled]="isBusy()">Wyloguj</button>
+    </nav>
+  </header>
+
+  <main class="account-layout">
+    <section class="account-copy">
+      <span class="eyebrow">Profil</span>
+      <h1>{{ user()?.name || 'Konto' }}</h1>
+      <p>{{ user()?.email }}</p>
+      <span class="role-pill">{{ user()?.role }}</span>
+    </section>
+
+    <form class="auth-panel profile-panel" (ngSubmit)="saveProfile()">
+      <div class="profile-summary">
+        <div class="profile-avatar large">
+          <img *ngIf="avatarSource" [src]="avatarSource" alt="Avatar" />
+          <span *ngIf="!avatarSource">{{ initial }}</span>
+        </div>
+        <div>
+          <span class="section-kicker">Ustawienia konta</span>
+          <h2>Dane profilu</h2>
+        </div>
+      </div>
+
+      <label class="form-group">
+        Nazwa
+        <input
+          type="text"
+          name="name"
+          [(ngModel)]="name"
+          autocomplete="name"
+          required
+        />
+      </label>
+
+      <label class="form-group">
+        Avatar
+        <input
+          class="file-input"
+          type="file"
+          name="avatar"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+          (change)="onAvatarSelected($event)"
+        />
+      </label>
+
+      <div class="form-success" *ngIf="success()">{{ success() }}</div>
+      <div class="form-error" *ngIf="error()">{{ error() }}</div>
+
+      <div class="form-actions">
+        <button class="cta auth-submit" type="submit" [disabled]="isBusy() || !name">
+          {{ isBusy() ? 'Zapisywanie...' : 'Zapisz profil' }}
+        </button>
+        <a class="secondary-action" *ngIf="isAdmin" routerLink="/admin">Przejdz do panelu admina</a>
+      </div>
+    </form>
+  </main>
+</div>

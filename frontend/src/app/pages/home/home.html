@@ -1,0 +1,223 @@
+<div class="page">
+  <header
+    #topbar
+    class="topbar"
+    [class.is-scrolled]="isScrolled"
+  >
+    <button class="brand brand-button" type="button" (click)="navigateFromMenu('/', false)">
+      <span class="brand-dot"></span>
+      WorldInfo
+      <span class="brand-tag">PL</span>
+    </button>
+    <form class="search" (ngSubmit)="searchArticles()">
+      <input
+        type="search"
+        name="search"
+        [(ngModel)]="searchQuery"
+        placeholder="Szukaj wiadomosci, tematow, autorow"
+        aria-label="Szukaj"
+      />
+      <button class="search-btn" type="submit" aria-label="Szukaj">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M20 20l-3.5-3.5"></path>
+        </svg>
+      </button>
+    </form>
+    <button class="cta" (click)="goToLogin()">Subskrybuj</button>
+    <div class="icon-group">
+      <button class="icon-btn" aria-label="Ustawienia profilu" (click)="goToProfile()">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c1.8-3.2 5-5 8-5s6.2 1.8 8 5"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" aria-label="Ulubione artykuly" (click)="goToFavorites()">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 18l-6 3 1.5-6.5L2 9.5l6.8-.6L12 3l3.2 5.9L22 9.5l-5.5 5L18 21z"></path>
+        </svg>
+      </button>
+      <div class="menu-wrap" (click)="$event.stopPropagation()">
+        <button
+          class="icon-btn"
+          aria-label="Menu"
+          type="button"
+          [attr.aria-expanded]="isMenuOpen()"
+          (click)="toggleMenu($event)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+
+        <nav class="burger-menu" *ngIf="isMenuOpen()" aria-label="Menu uzytkownika">
+          <span class="menu-kicker">Menu</span>
+
+          <button type="button" (click)="navigateFromMenu('/favorites')">Ulubione artykuly</button>
+          <button type="button" (click)="navigateFromMenu('/profile')">Ustawienia profilu</button>
+
+          <ng-container *ngIf="canManageArticles">
+            <span class="menu-separator"></span>
+            <button type="button" (click)="navigateFromMenu('/my-articles')">Twoje artykuly</button>
+            <button type="button" (click)="navigateFromMenu('/articles/new')">Dodaj artykul</button>
+          </ng-container>
+
+          <ng-container *ngIf="currentUser()?.role === 'admin'">
+            <span class="menu-separator"></span>
+            <button type="button" (click)="navigateFromMenu('/admin')">Panel admina</button>
+          </ng-container>
+
+          <ng-container *ngIf="!currentUser()">
+            <span class="menu-separator"></span>
+            <button type="button" (click)="navigateFromMenu('/login', false)">Logowanie</button>
+            <button type="button" (click)="navigateFromMenu('/register', false)">Rejestracja</button>
+          </ng-container>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="breaking">
+    <span class="breaking-label">Breaking</span>
+    Nowe dane o inflacji w UE. Rynki reaguja, inwestorzy czekaja na decyzje bankow.
+  </div>
+
+  <main class="content-grid">
+    <section class="main-news">
+      <div class="article-state" *ngIf="isLoadingArticles()">Ladowanie artykulow...</div>
+      <div class="article-state error" *ngIf="articleError()">{{ articleError() }}</div>
+
+      <article
+        class="hero-card premium"
+        *ngIf="heroArticle() as hero"
+        (click)="openArticle(hero)"
+      >
+        <img
+          [src]="articleImage(hero)"
+          [alt]="hero.title"
+          onerror="this.onerror=null;this.src='assets/images/placeholder.svg';"
+        />
+        <div class="hero-overlay">
+          <span class="hero-tag">{{ hero.section }}</span>
+          <h1>{{ hero.title }}</h1>
+          <div class="meta">
+            <div class="avatar"></div>
+            <div>
+              <strong>{{ hero.author.name }}</strong>
+              <span>{{ hero.section }} - {{ articleTime(hero) }}</span>
+            </div>
+            <button class="ghost" type="button" (click)="toggleFavorite(hero, $event)">
+              {{ hero.is_favorited ? 'W ulubionych' : 'Ulubione' }}
+            </button>
+          </div>
+          <div class="tag-row" *ngIf="hero.tags.length">
+            <button
+              class="tag-chip"
+              type="button"
+              *ngFor="let tag of hero.tags"
+              [class.active]="activeTag() === tag"
+              (click)="filterByTag(tag); $event.stopPropagation()"
+            >
+              #{{ tag }}
+            </button>
+          </div>
+        </div>
+        <span class="hero-accent"></span>
+      </article>
+
+      <div class="section-strip" *ngIf="gridArticles().length">
+        <div>
+          <span class="section-kicker">Najnowsze</span>
+          <h2>Publikacje</h2>
+        </div>
+        <button
+          class="clear-filter"
+          type="button"
+          *ngIf="activeTag()"
+          (click)="filterByTag(activeTag())"
+        >
+          Wyczysc filtr #{{ activeTag() }}
+        </button>
+      </div>
+
+      <div class="card-grid">
+        <article
+          class="news-card"
+          *ngFor="let article of gridArticles(); trackBy: trackByArticleId"
+          (click)="openArticle(article)"
+        >
+          <img
+            [src]="articleImage(article)"
+            [alt]="article.title"
+            onerror="this.onerror=null;this.src='assets/images/placeholder.svg';"
+          />
+          <div class="card-body">
+            <div class="card-title">{{ article.title }}</div>
+            <div class="card-meta">
+              <div class="avatar small"></div>
+              <span>{{ article.author.name }} · {{ article.section }}</span>
+              <span class="dot"></span>
+              <span>{{ articleTime(article) }}</span>
+            </div>
+            <div class="tag-row compact" *ngIf="article.tags.length">
+              <button
+                class="tag-chip"
+                type="button"
+                *ngFor="let tag of article.tags.slice(0, 3)"
+                [class.active]="activeTag() === tag"
+                (click)="filterByTag(tag); $event.stopPropagation()"
+              >
+                #{{ tag }}
+              </button>
+            </div>
+          </div>
+          <button
+            class="favorite-flag"
+            type="button"
+            [class.active]="article.is_favorited"
+            aria-label="Przelacz ulubione"
+            (click)="toggleFavorite(article, $event)"
+          >
+            ★
+          </button>
+        </article>
+      </div>
+
+      <div class="article-state" *ngIf="!isLoadingArticles() && !articleError() && !articles().length">
+        Brak artykulow dla podanych filtrow.
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="sidebar-title">Na teraz</div>
+      <article class="side-item">
+        <span class="side-time">07:40</span>
+        <div>
+          <strong>Sejm glosuje nad pakietem gospodarczym</strong>
+          <span>Polityka</span>
+        </div>
+      </article>
+      <article class="side-item">
+        <span class="side-time">07:25</span>
+        <div>
+          <strong>Nowe trendy w redakcjach cyfrowych</strong>
+          <span>Technologia</span>
+        </div>
+      </article>
+      <article class="side-item">
+        <span class="side-time">07:10</span>
+        <div>
+          <strong>Sport: kadra oglasza sklad na turniej</strong>
+          <span>Sport</span>
+        </div>
+      </article>
+      <article class="side-item">
+        <span class="side-time">06:55</span>
+        <div>
+          <strong>Rynek nieruchomosci: ceny rosna wolniej</strong>
+          <span>Biznes</span>
+        </div>
+      </article>
+    </aside>
+  </main>
+</div>

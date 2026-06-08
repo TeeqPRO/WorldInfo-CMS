@@ -1,0 +1,62 @@
+<div class="account-shell">
+  <header class="account-topbar">
+    <a class="account-brand" routerLink="/">
+      <span class="brand-dot"></span>
+      WorldInfo
+      <span class="brand-tag">PL</span>
+    </a>
+    <nav class="account-nav" aria-label="Konto">
+      <a routerLink="/profile">Profil</a>
+    </nav>
+  </header>
+
+  <main class="account-wide">
+    <section class="account-copy compact">
+      <span class="eyebrow">Administracja</span>
+      <h1>Panel admina</h1>
+      <p>Role redakcyjne bez mozliwosci zmiany glownego administratora.</p>
+    </section>
+
+    <section class="admin-panel">
+      <div class="admin-panel-header">
+        <div>
+          <span class="section-kicker">Uzytkownicy</span>
+          <h2>Lista kont</h2>
+        </div>
+      </div>
+
+      <div class="form-error" *ngIf="error()">{{ error() }}</div>
+      <div class="auth-empty" *ngIf="isLoading()">Ladowanie...</div>
+
+      <div class="admin-list" *ngIf="!isLoading() && users().length">
+        <div class="admin-row" *ngFor="let user of users(); trackBy: trackByUserId">
+          <div class="admin-user">
+            <div class="profile-avatar">
+              <img *ngIf="user.avatar_url" [src]="user.avatar_url" alt="Avatar" />
+              <span *ngIf="!user.avatar_url">{{ user.name.slice(0, 1).toUpperCase() }}</span>
+            </div>
+            <div>
+              <strong>{{ user.name }}</strong>
+              <span>{{ user.email }}</span>
+            </div>
+          </div>
+
+          <div class="role-control">
+            <span class="role-pill" [class.locked]="user.role === 'admin'">{{ roleLabel(user.role) }}</span>
+            <select
+              *ngIf="canEditRole(user)"
+              [value]="user.role"
+              (change)="onRoleChange(user, $event)"
+              [disabled]="busyUserId() === user.id"
+              aria-label="Rola uzytkownika"
+            >
+              <option *ngFor="let role of editableRoles" [value]="role.value">{{ role.label }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-empty" *ngIf="!isLoading() && !users().length">Brak uzytkownikow.</div>
+    </section>
+  </main>
+</div>

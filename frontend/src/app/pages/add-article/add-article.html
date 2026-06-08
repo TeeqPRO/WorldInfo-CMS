@@ -1,0 +1,118 @@
+<div class="account-shell">
+  <header class="account-topbar">
+    <a class="account-brand" routerLink="/">
+      <span class="brand-dot"></span>
+      WorldInfo
+      <span class="brand-tag">PL</span>
+    </a>
+    <nav class="account-nav" aria-label="Konto">
+      <a routerLink="/my-articles">Twoje artykuly</a>
+      <a routerLink="/profile">Profil</a>
+    </nav>
+  </header>
+
+  <main class="editor-layout" *ngIf="isReady()">
+    <form class="auth-panel editor-form" (ngSubmit)="saveArticle()">
+      <div class="auth-panel-heading">
+        <div>
+          <span class="section-kicker">CMS</span>
+          <h2>{{ isEditing ? 'Edytuj artykul' : 'Dodaj artykul' }}</h2>
+        </div>
+      </div>
+
+      <label class="form-group">
+        Tytul
+        <input type="text" name="title" [(ngModel)]="title" required />
+      </label>
+
+      <div class="form-split">
+        <label class="form-group">
+          Dzial
+          <select name="section" [(ngModel)]="section">
+            <option>Media</option>
+            <option>Polityka</option>
+            <option>Biznes</option>
+            <option>Technologia</option>
+            <option>Sport</option>
+          </select>
+        </label>
+
+        <label class="form-group">
+          Status
+          <select name="status" [(ngModel)]="status">
+            <option value="published">Opublikowany</option>
+            <option value="draft">Szkic</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="form-group">
+        Lead
+        <textarea name="excerpt" [(ngModel)]="excerpt" rows="3"></textarea>
+      </label>
+
+      <label class="form-group">
+        Tagi
+        <input type="text" name="tags" [(ngModel)]="tagsInput" placeholder="media, polityka, premium" />
+      </label>
+
+      <label class="form-group">
+        Obrazek
+        <input
+          class="file-input"
+          type="file"
+          name="image"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+          (change)="onImageSelected($event)"
+        />
+      </label>
+
+      <img class="editor-image-preview" *ngIf="imagePreview()" [src]="imagePreview()" alt="Podglad obrazka" />
+
+      <div class="format-toolbar" aria-label="Formatowanie">
+        <button type="button" (click)="insertFormat('h2')">H2</button>
+        <button type="button" (click)="insertFormat('bold')">B</button>
+        <button type="button" (click)="insertFormat('italic')">I</button>
+        <button type="button" (click)="insertFormat('quote')">Cytat</button>
+        <button type="button" (click)="insertFormat('list')">Lista</button>
+        <button type="button" (click)="insertFormat('link')">Link</button>
+      </div>
+
+      <label class="form-group">
+        Tresc
+        <textarea #bodyInput name="body" [(ngModel)]="body" rows="14" required></textarea>
+      </label>
+
+      <div class="form-success" *ngIf="message()">{{ message() }}</div>
+      <div class="form-error" *ngIf="error()">{{ error() }}</div>
+
+      <button class="cta auth-submit" type="submit" [disabled]="isSaving() || !title || !body">
+        {{ isSaving() ? 'Zapisywanie...' : (isEditing ? 'Zapisz zmiany' : 'Dodaj artykul') }}
+      </button>
+    </form>
+
+    <aside class="editor-aside">
+      <section class="admin-panel">
+        <span class="section-kicker">Sciaga formatowania</span>
+        <div class="format-help">
+          <code>## Naglowek</code>
+          <code>**pogrubienie**</code>
+          <code>*kursywa*</code>
+          <code>> cytat</code>
+          <code>- lista</code>
+          <code>[tekst](https://adres.pl)</code>
+        </div>
+      </section>
+
+      <section class="admin-panel">
+        <span class="section-kicker">Podglad</span>
+        <h2>{{ title || 'Tytul artykulu' }}</h2>
+        <p class="reader-lead" *ngIf="excerpt">{{ excerpt }}</p>
+        <div class="tag-cloud" *ngIf="tagsInput">
+          <span *ngFor="let tag of tagsInput.split(',')">#{{ tag.trim() }}</span>
+        </div>
+        <div class="formatted-content" [innerHTML]="renderedPreview"></div>
+      </section>
+    </aside>
+  </main>
+</div>

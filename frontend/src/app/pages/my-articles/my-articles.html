@@ -1,0 +1,65 @@
+<div class="account-shell">
+  <header class="account-topbar">
+    <a class="account-brand" routerLink="/">
+      <span class="brand-dot"></span>
+      WorldInfo
+      <span class="brand-tag">PL</span>
+    </a>
+    <nav class="account-nav" aria-label="Konto">
+      <a routerLink="/articles/new">Dodaj artykul</a>
+      <a routerLink="/profile">Profil</a>
+    </nav>
+  </header>
+
+  <main class="account-wide">
+    <section class="account-copy compact">
+      <span class="eyebrow">Redakcja</span>
+      <h1>{{ currentUser()?.role === 'admin' ? 'Wszystkie artykuly' : 'Twoje artykuly' }}</h1>
+      <p>
+        {{ currentUser()?.role === 'admin'
+          ? 'Admin moze edytowac i usuwac wszystkie teksty.'
+          : 'Dziennikarz moze edytowac i usuwac tylko swoje teksty.' }}
+      </p>
+    </section>
+
+    <section class="admin-panel" *ngIf="isReady()">
+      <div class="admin-panel-header">
+        <div>
+          <span class="section-kicker">CMS</span>
+          <h2>Lista tekstow</h2>
+        </div>
+        <a class="secondary-action" routerLink="/articles/new">Dodaj artykul</a>
+      </div>
+
+      <div class="form-error" *ngIf="error()">{{ error() }}</div>
+
+      <div class="article-list" *ngIf="articles().length">
+        <article class="article-row" *ngFor="let article of articles(); trackBy: trackByArticleId">
+          <div>
+            <strong>{{ article.title }}</strong>
+            <span>
+              {{ article.section }} · {{ article.author.name }} ·
+              {{ article.status === 'draft' ? 'Szkic' : 'Opublikowany' }}
+            </span>
+            <span *ngIf="article.tags.length">#{{ article.tags.join(' #') }}</span>
+          </div>
+          <div class="row-actions">
+            <a class="small-action" [routerLink]="['/articles', article.id]">Czytaj</a>
+            <a class="small-action" *ngIf="article.can_edit" [routerLink]="['/articles', article.id, 'edit']">Edytuj</a>
+            <button
+              class="small-action danger"
+              type="button"
+              *ngIf="article.can_delete"
+              [disabled]="busyArticleId() === article.id"
+              (click)="deleteArticle(article)"
+            >
+              {{ busyArticleId() === article.id ? 'Usuwanie...' : 'Usun' }}
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <div class="auth-empty" *ngIf="!articles().length && !error()">Brak artykulow.</div>
+    </section>
+  </main>
+</div>

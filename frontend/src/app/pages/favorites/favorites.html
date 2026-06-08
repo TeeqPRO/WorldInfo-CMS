@@ -1,0 +1,54 @@
+<div class="account-shell">
+  <header class="account-topbar">
+    <a class="account-brand" routerLink="/">
+      <span class="brand-dot"></span>
+      WorldInfo
+      <span class="brand-tag">PL</span>
+    </a>
+    <nav class="account-nav" aria-label="Konto">
+      <a routerLink="/profile">Profil</a>
+    </nav>
+  </header>
+
+  <main class="account-wide">
+    <section class="account-copy compact">
+      <span class="eyebrow">Biblioteka</span>
+      <h1>Ulubione artykuly</h1>
+      <p>Zapisane teksty do pozniejszego czytania.</p>
+    </section>
+
+    <section class="admin-panel" *ngIf="isReady()">
+      <div class="admin-panel-header">
+        <div>
+          <span class="section-kicker">Twoja lista</span>
+          <h2>Zapisane</h2>
+        </div>
+      </div>
+
+      <div class="form-error" *ngIf="error()">{{ error() }}</div>
+
+      <div class="article-list" *ngIf="articles().length">
+        <article class="article-row" *ngFor="let article of articles(); trackBy: trackByArticleId">
+          <div>
+            <strong>{{ article.title }}</strong>
+            <span>{{ article.section }} · {{ article.author.name }}</span>
+            <span *ngIf="article.tags.length">#{{ article.tags.join(' #') }}</span>
+          </div>
+          <div class="row-actions">
+            <a class="small-action" [routerLink]="['/articles', article.id]">Czytaj</a>
+            <button
+              class="small-action danger"
+              type="button"
+              [disabled]="busyArticleId() === article.id"
+              (click)="removeFavorite(article)"
+            >
+              {{ busyArticleId() === article.id ? 'Usuwanie...' : 'Usun z ulubionych' }}
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <div class="auth-empty" *ngIf="!articles().length && !error()">Brak ulubionych artykulow.</div>
+    </section>
+  </main>
+</div>
